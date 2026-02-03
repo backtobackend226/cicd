@@ -1,4 +1,4 @@
-import { CreateUserDto, UpdateUserDto } from '@lib/library/src';
+import { CreateUserDto, UpdateUserDto } from '@lib/library';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { UsersConfig } from '../config/users.config';
@@ -8,9 +8,8 @@ export class UsersService {
   constructor(private readonly usersConfig: UsersConfig) {}
   async create(createUserDto: CreateUserDto) {
     try {
-      return (
-        await axios.post(this.usersConfig.usersService, createUserDto)
-      ).data();
+      return (await axios.post(this.usersConfig.usersService, createUserDto))
+        .data;
     } catch (error) {
       console.log('error:', error);
     }

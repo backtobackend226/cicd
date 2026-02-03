@@ -1,4 +1,4 @@
-import { configValidationUtility } from '@lib/library/src';
+import { configValidationUtility } from '@lib/library';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IsNumber, IsString } from 'class-validator';

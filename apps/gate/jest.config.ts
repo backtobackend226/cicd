@@ -7,6 +7,6 @@ module.exports = {
   },
   moduleNameMapper: {
     '^@app/(.*)$': '<rootDir>/../$1',
-    '^@lib/(.*)$': '<rootDir>/../../libs/$1',
+    '^@lib/(.*)$': '<rootDir>/../../libs/$1/src',
   },
 };

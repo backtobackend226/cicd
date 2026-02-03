@@ -16,6 +16,9 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (POST)', () => {
-    return request(app.getHttpServer()).post('/users').expect(201);
+    return request(app.getHttpServer())
+      .post('/users')
+      .send({ name: 'vasylko', password: '1234' })
+      .expect(201);
   });
 });

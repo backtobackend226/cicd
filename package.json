@@ -18,8 +18,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:gate:e2e": "jest --config ./apps/gate/test/jest-e2e.json",
-    "test:users:e2e": "jest --config ./apps/users/test/jest-e2e.json",
+    "test:gate:e2e": "jest --config apps/gate/jest.config.ts",
+    "test:users:e2e": "jest --config apps/users/jest.config.ts",
     "prepare": "husky install"
   },
   "dependencies": {
