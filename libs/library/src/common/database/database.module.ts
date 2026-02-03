@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         type: 'postgres',
         url: configService.get<string>('PG_URL'),
         autoLoadEntities: true,
+        synchronize: process.env.NODE_ENV !== 'prod' ? true : false,
       }),
     }),
   ],

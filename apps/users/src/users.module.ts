@@ -3,6 +3,9 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { ConfigModule } from '@nestjs/config';
 import { DataBaseModule, Environments, getEnvFilePath } from '@lib/library/src';
+import { UsersRepository } from './infrastructure/repository/users.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './domain/user.entity';
 
 @Module({
   imports: [
@@ -12,8 +15,9 @@ import { DataBaseModule, Environments, getEnvFilePath } from '@lib/library/src';
       envFilePath: getEnvFilePath('users'),
     }),
     DataBaseModule,
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, UsersRepository],
 })
 export class UsersModule {}

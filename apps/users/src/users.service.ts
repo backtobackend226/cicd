@@ -1,8 +1,17 @@
+import { CreateUserDto } from '@lib/library/src';
 import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { UsersRepository } from './infrastructure/repository/users.repository';
 
 @Injectable()
 export class UsersService {
-  getHello(): string {
-    return 'Hello World!';
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly usersRepository: UsersRepository,
+  ) {}
+  async create(dto: CreateUserDto) {
+    return this.dataSource.transaction(async (manager) => {
+      return await this.usersRepository.create(dto, manager);
+    });
   }
 }
