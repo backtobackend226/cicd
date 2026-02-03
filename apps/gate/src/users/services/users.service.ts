@@ -7,14 +7,12 @@ import { UsersConfig } from '../config/users.config';
 export class UsersService {
   constructor(private readonly usersConfig: UsersConfig) {}
   async create(createUserDto: CreateUserDto) {
-    console.log(
-      '🚀 ~ UsersService ~ create ~ createUserDto:',
-      this.usersConfig.usersService,
-    );
     try {
-      return await axios.post(this.usersConfig.usersService, createUserDto);
+      return (
+        await axios.post(this.usersConfig.usersService, createUserDto)
+      ).data();
     } catch (error) {
-      console.log('🚀 ~ UsersService ~ create ~ error:', error);
+      console.log('error:', error);
     }
   }
 
