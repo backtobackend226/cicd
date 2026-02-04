@@ -3,9 +3,11 @@
 ################################
 FROM node:20-alpine AS builder
 
-ARG service
+ARG SERVICE
 
-ENV SERVICE=${service}
+ENV SERVICE=${SERVICE}
+
+RUN echo "SERVICE=${SERVICE}"
 
 WORKDIR /repo
 
@@ -29,9 +31,9 @@ RUN yarn build:${SERVICE}
 ################################
 FROM node:20-alpine
 
-ARG service
+ARG SERVICE
 
-ENV SERVICE=${service}
+ENV SERVICE=${SERVICE}
 ENV NODE_ENV=production
 
 WORKDIR /app
