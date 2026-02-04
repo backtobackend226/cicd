@@ -5,9 +5,10 @@ services:
     build:
       context: .
       dockerfile: apps/gate/dockerfile
-    image: gate-service:ci
-    args:
+      args:
       SERVICE: ${SERVICE}
+    image: gate-service:ci
+
     ports:
       - '3000:3000'
     environment:
