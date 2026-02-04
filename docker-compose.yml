@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: apps/gate/dockerfile
       args:
-      SERVICE: ${SERVICE}
+        SERVICE: ${SERVICE}
     image: gate-service:ci
 
     ports:

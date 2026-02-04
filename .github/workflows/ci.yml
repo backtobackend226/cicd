@@ -9,6 +9,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: .env2
 
     steps:
       # 1) Checkout code
