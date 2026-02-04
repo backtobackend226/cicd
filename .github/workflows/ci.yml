@@ -77,4 +77,4 @@ jobs:
       - name: Test Gate service
         run: |
           PORT=${{ steps.nodeport.outputs.port }}
-          curl -f http://localhost:${PORT}/health
+          curl -f http://localhost:${PORT}/api/v1/users
