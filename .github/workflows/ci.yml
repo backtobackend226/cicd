@@ -40,7 +40,7 @@ jobs:
       # 6) Build gate image using Docker Compose
       - name: Build gate image
         run: |
-          docker compose build gate
+          service=${{secrets.GATE_SERVICE}}  docker compose build gate
 
       # - name: Build users image
       #   run: |
