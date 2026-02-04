@@ -1,23 +1,68 @@
-name: Build
+name: Gate Service – Docker Compose + KIND
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    # types: [closed]
     branches:
-      - main
       - dev
 
 jobs:
-  format:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # 1) Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Setup Docker
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3) Install kubectl
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Build
-        run: yarn format
+          version: v1.29.0
+
+      # 4) Install KIND
+      - name: Install KIND
+        run: |
+          curl -Lo kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/kind
+
+      # 5) Create KIND cluster
+      - name: Create KIND cluster
+        run: |
+          kind create cluster --name monorepo --config kind-config.yaml
+
+      # 6) Build gate image using Docker Compose
+      - name: Build gate image
+        run: |
+          docker compose build gate
+
+      # - name: Build users image
+      #   run: |
+      #     docker compose build users
+
+      # 7) Load image into KIND
+      - name: Load image into KIND
+        run: |
+          kind load docker-image gate-service:ci --name monorepo
+          # kind load docker-image users-service:ci --name monorepo
+
+      # 8) Deploy to Kubernetes
+      - name: Deploy manifests
+        run: |
+          kubectl apply -f k8s/
+
+      # 9) Wait for rollout
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/gate --timeout=120s
+
+      # 10) Debug info
+      - name: Get pods
+        run: |
+          kubectl get pods -o wide

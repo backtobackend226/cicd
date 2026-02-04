@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  gate:
+    build:
+      context: .
+      dockerfile: apps/gate/dockerfile
+    image: gate-service:ci
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+
+  # users:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/users/dockerfile
+  #   image: users-service:ci
+  #   depends_on:
+  #     - postgres-users
+  #     - postgres-users-test
+  #   ports:
+  #     - '3001:3001'
+  #   environment:
+  #     NODE_ENV: production
+
+  # postgres-users:
+  #   image: postgres:17
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./apps/users/src/env/.env.dev.local
+  #   ports:
+  #     - '54321:5432'
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ['CMD-SHELL', 'pg_isready -U postgres -d cyrox-test']
+  #     interval: 2s
+  #     timeout: 5s
+  #     retries: 30
+
+  # postgres-users-test:
+  #   image: postgres:17
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./apps/users/src/env/.env.test.local
+  #   ports:
+  #     - '54321:5432'
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ['CMD-SHELL', 'pg_isready -U postgres -d cyrox-test']
+  #     interval: 2s
+  #     timeout: 5s
+  #     retries: 30

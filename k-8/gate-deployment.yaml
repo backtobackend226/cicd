@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gate
+  template:
+    metadata:
+      labels:
+        app: gate
+    spec:
+      containers:
+        - name: gate
+          image: gate-service:ci
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+        # - name: users
+        #   image: users-service:ci
+        #   imagePullPolicy: IfNotPresent
+        #   ports:
+        #     - containerPort: 3001
+        #   securityContext:
+        #     runAsNonRoot: true
+        #     runAsUser: 1000

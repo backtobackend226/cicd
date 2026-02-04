@@ -1,0 +1,55 @@
+################################
+# 1️⃣ Builder stage
+################################
+FROM node:20-alpine AS builder
+
+ARG service
+
+ENV SERVICE=${service}
+
+WORKDIR /repo
+
+# Copy only dependency manifests first (cache!)
+COPY package.json yarn.lock ./
+
+RUN yarn install --frozen-lockfile
+
+# Copy source code
+COPY apps ./apps
+COPY libs ./libs
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
+
+# Build only gate app
+RUN yarn build:${SERVICE}
+
+
+################################
+# 2️⃣ Runtime stage
+################################
+FROM node:20-alpine
+
+ARG service
+
+ENV SERVICE=${service}
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy built output only
+COPY --from=builder --chown=appuser:appgroup /repo/dist/apps/${SERVICE} ./dist
+COPY --from=builder --chown=appuser:appgroup /repo/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /repo/package.json ./package.json
+
+# # Fix ownership
+# RUN chown -R appuser:appgroup /app
+
+USER appuser
+
+EXPOSE 3000
+
+ENTRYPOINT ["node"]
+CMD ["dist/main.js"]
