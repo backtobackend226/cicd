@@ -68,3 +68,12 @@ jobs:
       - name: Get pods
         run: |
           kubectl get pods -o wide
+
+      - name: Port forward gate
+        run: |
+          kubectl port-forward svc/gate 3000:3000 &
+          sleep 2
+
+      - name: Run curl test
+        run: |
+          curl -f http://localhost:3000/api/v1
