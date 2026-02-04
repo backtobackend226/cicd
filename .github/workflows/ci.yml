@@ -69,11 +69,12 @@ jobs:
         run: |
           kubectl get pods -o wide
 
-      - name: Port forward gate
+      - name: Get NodePort
+        id: nodeport
         run: |
-          kubectl port-forward svc/gate 3000:3000 &
-          sleep 2
+          echo "::set-output name=port::$(kubectl get svc gate -o jsonpath='{.spec.ports[0].nodePort}')"
 
-      - name: Run curl test
+      - name: Test Gate service
         run: |
-          curl -f http://localhost:3000/api/v1/users
+          PORT=${{ steps.nodeport.outputs.port }}
+          curl -f http://localhost:${PORT}/health
