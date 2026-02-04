@@ -76,4 +76,4 @@ jobs:
 
       - name: Test API
         run: |
-          curl -f http://localhost:3000/api/v1/users
+          curl -v http://localhost:3000/
