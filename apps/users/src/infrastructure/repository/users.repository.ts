@@ -1,4 +1,4 @@
-import { CreateUserDto } from '@lib/library/src';
+import { CreateUserDto } from '@lib/library';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../domain/user.entity';

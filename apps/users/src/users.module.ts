@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { ConfigModule } from '@nestjs/config';
-import { DataBaseModule, Environments, getEnvFilePath } from '@lib/library/src';
+import { DataBaseModule, Environments, getEnvFilePath } from '@lib/library';
 import { UsersRepository } from './infrastructure/repository/users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './domain/user.entity';
