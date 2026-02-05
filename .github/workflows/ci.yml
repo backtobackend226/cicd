@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: .env2
+      name: prod
 
     steps:
       # 1) Checkout code
@@ -42,11 +42,11 @@ jobs:
       # 6) Build gate image using Docker Compose
       - name: Build gate image
         run: |
-          SERVICE=${{ secrets.GATE_SERVICE }} docker compose build gate
+          SERVICE=${{ vars.GATE_NAME }} docker compose build gate
 
       - name: Build users image
         run: |
-          SERVICE=${{ secrets.USERS_SERVICE }}  docker compose build users
+          SERVICE=${{ vars.USERS_NAME }}  docker compose build users
 
       # 7) Load image into KIND
       - name: Load image into KIND
@@ -54,12 +54,36 @@ jobs:
           kind load docker-image gate-service:ci --name monorepo
           kind load docker-image users-service:ci --name monorepo
 
-      - name: Apply secrets
+      - name: Apply secrets gate
         run: |
-          kubectl create secret generic users \
-            --from-literal=NODE_ENV=${{ secrets.NODE_ENV }} \
+          kubectl create secret generic gate_secrets \ 
+            # --from-literal=NODE_ENV=${{ secrets.NODE_ENV }} \
+            --from-literal=USERS_SERVICE=${{ secrets.USERS_SERVICE }} \
+            # --from-literal=PG_URL=${{ secrets.PG_URL }} \
+            --from-literal=USERS_PORT=${{ secrets.GATE_PORT }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply secrets users
+        run: |
+          kubectl create secret generic users_secrets \ 
+            # --from-literal=NODE_ENV=${{ secrets.NODE_ENV }} \
+            # --from-literal=USERS_SERVICE=${{ secrets.USERS_SERVICE }} \
             --from-literal=PG_URL=${{ secrets.PG_URL }} \
-            --from-literal=PORT=${{ secrets.PORT }} \
+            --from-literal=USERS_PORT=${{ secrets.USERS_PORT }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply config variables gate_config
+        run: |
+          kubectl create configmap gate_config \
+            --from-literal=NODE_ENV=${{ vars.NODE_ENV }} \
+            --from-literal=GATE_NAME=${{vars.GATE_NAME}} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply config variables users_config
+        run: |
+          kubectl create configmap gate_config \
+            --from-literal=NODE_ENV=${{ vars.NODE_ENV }} \
+            --from-literal=USERS_NAME=${{vars.USERS_NAME}} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       # 8) Deploy to Kubernetes
@@ -83,9 +107,19 @@ jobs:
           kubectl port-forward svc/gate 3000:3000 &
           sleep 2
 
+      - name: Port forward users
+        run: |
+          kubectl port-forward svc/users 3001:3001 &
+          sleep 2
+
       - name: Test API
         run: |
-          curl -v http://localhost:3000/api/v1/users
+          curl -X POST http://localhost:3000/api/v1/users \
+           -H "Content-Type: application/json" \
+           -d '{
+            "name":"vasylko",
+            "password":"1234"
+               }'
 
       - name: Logs on failure
         if: failure()

@@ -14,7 +14,7 @@ export class UsersConfig {
 
   constructor(private readonly configService: ConfigService) {
     this.nodeEnv = this.configService.getOrThrow('NODE_ENV');
-    this.port = +this.configService.get('PORT');
+    this.port = +this.configService.getOrThrow('GATE_PORT');
     this.usersService = this.configService.getOrThrow('USERS_SERVICE');
     configValidationUtility.validateConfig(this);
   }

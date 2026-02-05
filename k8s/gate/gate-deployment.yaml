@@ -17,18 +17,13 @@ spec:
           image: gate-service:ci
           imagePullPolicy: IfNotPresent
           envFrom:
+            - secretKeyRef:
+                name: gate_secrets
+          envFrom:
             - configMapRef:
-                name: gate-config
+                name: gate_config
           ports:
             - containerPort: 3000
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
-        # - name: users
-        #   image: users-service:ci
-        #   imagePullPolicy: IfNotPresent
-        #   ports:
-        #     - containerPort: 3001
-        #   securityContext:
-        #     runAsNonRoot: true
-        #     runAsUser: 1000
