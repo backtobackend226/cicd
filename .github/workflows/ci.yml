@@ -76,8 +76,9 @@ jobs:
 
       - name: Test API
         run: |
-          curl -v http://localhost:3000/
+          curl -v http://localhost:3000/api/v1/users
 
-      - name: logs
+      - name: Logs on failure
+        if: failure()
         run: |
           kubectl logs -l app=gate
