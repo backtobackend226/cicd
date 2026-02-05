@@ -91,6 +91,7 @@ jobs:
       # 9) Wait for rollout
       - name: Wait for rollout
         run: |
+          kubectl describe pod -l app=gate
           kubectl rollout status deployment/gate --timeout=120s
       #
       # 10) Debug info
