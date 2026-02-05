@@ -92,7 +92,7 @@ jobs:
       - name: Wait for rollout
         run: |
           kubectl rollout status deployment/gate --timeout=120s
-
+      #
       # 10) Debug info
       - name: Get pods
         run: |
