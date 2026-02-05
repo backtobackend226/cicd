@@ -44,20 +44,29 @@ jobs:
         run: |
           SERVICE=${{ secrets.GATE_SERVICE }} docker compose build gate
 
-      # - name: Build users image
-      #   run: |
-      #     docker compose build users
+      - name: Build users image
+        run: |
+          SERVICE=${{ secrets.USERS_SERVICE }}  docker compose build users
 
       # 7) Load image into KIND
       - name: Load image into KIND
         run: |
           kind load docker-image gate-service:ci --name monorepo
-          # kind load docker-image users-service:ci --name monorepo
+          kind load docker-image users-service:ci --name monorepo
+
+      - name: Apply secrets
+        run: |
+          kubectl create secret generic users \
+            --from-literal=NODE_ENV=${{ secrets.NODE_ENV }} \
+            --from-literal=PG_URL=${{ secrets.PG_URL }} \
+            --from-literal=PORT=${{ secrets.PORT }} \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       # 8) Deploy to Kubernetes
       - name: Deploy manifests
         run: |
-          kubectl apply -f k8s/gate
+          kubectl apply -f k8s/gate 
+          kubectl apply -f k8s/users
 
       # 9) Wait for rollout
       - name: Wait for rollout
