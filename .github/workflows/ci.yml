@@ -77,3 +77,7 @@ jobs:
       - name: Test API
         run: |
           curl -v http://localhost:3000/
+
+      - name: logs
+        run: |
+          kubectl logs -l app=gate
