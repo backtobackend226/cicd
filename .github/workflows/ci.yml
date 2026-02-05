@@ -57,7 +57,7 @@ jobs:
       # 8) Deploy to Kubernetes
       - name: Deploy manifests
         run: |
-          kubectl apply -f k8s/
+          kubectl apply -f k8s/gate
 
       # 9) Wait for rollout
       - name: Wait for rollout

@@ -16,6 +16,9 @@ spec:
         - name: gate
           image: gate-service:ci
           imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: gate-config
           ports:
             - containerPort: 3000
           securityContext:
