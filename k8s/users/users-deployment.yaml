@@ -18,10 +18,10 @@ spec:
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretKeyRef:
-                name: users_secrets
+                name: users-secrets
           envFrom:
             - configMapRef:
-                name: users_config
+                name: users-config
           ports:
             - containerPort: 3001
           securityContext:

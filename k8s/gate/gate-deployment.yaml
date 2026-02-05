@@ -18,10 +18,10 @@ spec:
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretKeyRef:
-                name: gate_secrets
+                name: gate-secrets
           envFrom:
             - configMapRef:
-                name: gate_config
+                name: gate-config
           ports:
             - containerPort: 3000
           securityContext:
