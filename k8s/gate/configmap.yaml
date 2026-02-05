@@ -5,4 +5,4 @@ metadata:
 data:
   NODE_ENV: 'production'
   PORT: '3000'
-  USERS_SERVICE_URL: 'http://localhost:3001'
+  USERS_SERVICE: 'http://localhost:3001'
