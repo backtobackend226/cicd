@@ -64,6 +64,9 @@ jobs:
       - name: Apply secrets users
         run: |
           kubectl create secret generic users-secrets --from-literal=PG_URL=${{ secrets.PG_URL }} --from-literal=USERS_PORT=${{ secrets.USERS_PORT }} --dry-run=client -o yaml | kubectl apply -f -
+      - name: Debug line endings
+        run: |
+          sed -n 'l' $0
 
       - name: Apply config variables gate config
         run: |
