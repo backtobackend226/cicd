@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: gate-config
-data:
-  NODE_ENV: 'prod'
-  GATE_PORT: '3000'

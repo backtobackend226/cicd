@@ -32,7 +32,6 @@ FROM node:20-alpine
 ARG SERVICE
 
 ENV SERVICE=${SERVICE}
-ENV NODE_ENV=prod
 
 WORKDIR /app
 
@@ -45,8 +44,6 @@ COPY --from=builder --chown=appuser:appgroup /repo/node_modules ./node_modules
 COPY --from=builder --chown=appuser:appgroup /repo/package.json ./package.json
 
 # # Fix ownership
-# RUN chown -R appuser:appgroup /app
-
 USER appuser
 
 EXPOSE 3000
