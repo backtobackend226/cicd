@@ -57,17 +57,13 @@ jobs:
       - name: Apply secrets gate
         run: |
           kubectl create secret generic gate_secrets \ 
-            # --from-literal=NODE_ENV=${{ secrets.NODE_ENV }} \
             --from-literal=USERS_SERVICE=${{ secrets.USERS_SERVICE }} \
-            # --from-literal=PG_URL=${{ secrets.PG_URL }} \
-            --from-literal=USERS_PORT=${{ secrets.GATE_PORT }} \
+            --from-literal=GATE_PORT=${{ secrets.GATE_PORT }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Apply secrets users
         run: |
-          kubectl create secret generic users_secrets \ 
-            # --from-literal=NODE_ENV=${{ secrets.NODE_ENV }} \
-            # --from-literal=USERS_SERVICE=${{ secrets.USERS_SERVICE }} \
+          kubectl create secret generic users_secrets \           
             --from-literal=PG_URL=${{ secrets.PG_URL }} \
             --from-literal=USERS_PORT=${{ secrets.USERS_PORT }} \
             --dry-run=client -o yaml | kubectl apply -f -
@@ -81,7 +77,7 @@ jobs:
 
       - name: Apply config variables users_config
         run: |
-          kubectl create configmap gate_config \
+          kubectl create configmap users_config \
             --from-literal=NODE_ENV=${{ vars.NODE_ENV }} \
             --from-literal=USERS_NAME=${{vars.USERS_NAME}} \
             --dry-run=client -o yaml | kubectl apply -f -
