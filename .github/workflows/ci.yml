@@ -42,11 +42,16 @@ jobs:
       # 6) Build gate image using Docker Compose
       - name: Build gate image
         run: |
-          SERVICE=${{ vars.GATE_NAME }} docker compose build gate
+          SERVICE=${{ vars.GATE_NAME }} docker compose build --load gate
 
       - name: Build users image
         run: |
-          SERVICE=${{ vars.USERS_NAME }}  docker compose build users
+          SERVICE=${{ vars.USERS_NAME }}  docker compose build --load users
+
+      - name: Load images into KIND
+        run: |
+          kind load docker-image gate-service:ci --name monorepo
+          kind load docker-image users-service:ci --name monorepo
 
       # 7) Load image into KIND
       - name: Load image into KIND
