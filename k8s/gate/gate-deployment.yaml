@@ -17,9 +17,8 @@ spec:
           image: gate-service:ci
           imagePullPolicy: IfNotPresent
           envFrom:
-            - secretKeyRef:
+            - secretRef:
                 name: gate-secrets
-          envFrom:
             - configMapRef:
                 name: gate-config
           ports:
