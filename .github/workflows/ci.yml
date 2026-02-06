@@ -1,0 +1,134 @@
+name: Gate Service – Docker Compose + KIND
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+
+    steps:
+      # 1) Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Setup Docker
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3) Install kubectl
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.29.0
+
+      # 4) Install KIND
+      - name: Install KIND
+        run: |
+          curl -Lo kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/kind
+
+      # 5) Create KIND cluster
+      - name: Create KIND cluster
+        run: |
+          kind create cluster --name monorepo --config kind-config.yaml
+
+      # 6) Build gate image using Docker Compose
+      - name: Build gate image
+        run: |
+          SERVICE=${{ vars.GATE_NAME }} docker compose build gate
+
+      - name: Build users image
+        run: |
+          SERVICE=${{ vars.USERS_NAME }}  docker compose build users
+
+      # 7) Load image into KIND
+      - name: Load image into KIND
+        run: |
+          kind load docker-image gate-service:ci --name monorepo
+          kind load docker-image users-service:ci --name monorepo
+
+      - name: Apply secrets gate
+        run: |
+          kubectl create secret generic gate-secrets \
+            --from-literal=USERS_SERVICE="${{ secrets.USERS_SERVICE }}" \
+            --from-literal=GATE_PORT="${{ secrets.GATE_PORT }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply secrets users
+        run: |
+          kubectl create secret generic users-secrets \
+            --from-literal=PG_URL="${{ secrets.PG_URL }}" \
+            --from-literal=USERS_PORT="${{ secrets.USERS_PORT }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply config variables gate config
+        run: |
+          kubectl create configmap gate-config \
+            --from-literal=NODE_ENV="${{ vars.NODE_ENV }}" \
+            --from-literal=GATE_NAME="${{vars.GATE_NAME}}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply config variables users config
+        run: |
+          kubectl create configmap users-config \
+            --from-literal=NODE_ENV="${{ vars.NODE_ENV }}" \
+            --from-literal=USERS_NAME="${{vars.USERS_NAME}}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # 8) Deploy to Kubernetes
+      - name: Deploy manifests
+        run: |
+          kubectl apply -f k8s/gate 
+          kubectl apply -f k8s/users
+
+      # 9) Wait for rollout
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/gate --timeout=120s
+
+      # 10) Debug info
+      - name: Get pods
+        run: |
+          kubectl get pods -o wide
+
+      - name: Port forward gate
+        run: |
+          kubectl port-forward svc/gate 3000:3000 &
+          sleep 2
+
+      - name: Test API
+        run: |
+          set +e  # do NOT stop if curl fails
+
+          echo "▶ Sending request to Gate API"
+          curl -v -X POST http://localhost:3000/api/v1/users \
+          -H "Content-Type: application/json" \
+          -d '{
+              "name": "vasylko",
+              "password": "1234"
+              }'
+          CURL_EXITCODE=$?
+
+          echo ""
+          echo "▶ Collecting Gate logs"
+          GATE_POD=$(kubectl get pod -l app=gate -o jsonpath='{.items[0].metadata.name}')
+          kubectl logs "$GATE_POD" --all-containers=true --timestamps || true
+
+          echo ""
+          echo "▶ Collecting Users logs"
+          USERS_POD=$(kubectl get pod -l app=users -o jsonpath='{.items[0].metadata.name}')
+          kubectl logs "$USERS_POD" --all-containers=true --timestamps || true
+
+          exit $CURL_EXIT_CODE
+
+      - name: Logs on failure
+        if: failure()
+        run: |
+          kubectl logs -l app=gate

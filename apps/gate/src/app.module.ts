@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { Environments, getEnvFilePath } from '@lib/library/src';
+import { Environments, getEnvFilePath } from '@lib/library';
 
 @Module({
   imports: [
