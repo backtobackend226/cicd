@@ -42,16 +42,11 @@ jobs:
       # 6) Build gate image using Docker Compose
       - name: Build gate image
         run: |
-          SERVICE=${{ vars.GATE_NAME }} docker compose build --load gate
+          SERVICE=${{ vars.GATE_NAME }} docker compose build gate
 
       - name: Build users image
         run: |
-          SERVICE=${{ vars.USERS_NAME }}  docker compose build --load users
-
-      - name: Load images into KIND
-        run: |
-          kind load docker-image gate-service:ci --name monorepo
-          kind load docker-image users-service:ci --name monorepo
+          SERVICE=${{ vars.USERS_NAME }}  docker compose build users
 
       # 7) Load image into KIND
       - name: Load image into KIND
@@ -96,9 +91,8 @@ jobs:
       # 9) Wait for rollout
       - name: Wait for rollout
         run: |
-          kubectl describe pod -l app=gate
           kubectl rollout status deployment/gate --timeout=120s
-      #
+
       # 10) Debug info
       - name: Get pods
         run: |
