@@ -11,6 +11,8 @@ export class UsersRepository {
   ) {}
   async create(dto: CreateUserDto, manager?: EntityManager) {
     const user = new User(dto);
+    console.log('user repos =', user);
+
     if (manager) {
       return await manager.save(user);
     }
