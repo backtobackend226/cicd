@@ -103,10 +103,10 @@ jobs:
           kubectl port-forward svc/gate 3000:3000 &
           sleep 2
 
-      # - name: Port forward users
-      #   run: |
-      #     kubectl port-forward svc/users 3001:3001 &
-      #     sleep 2
+      - name: Port forward users
+        run: |
+          kubectl port-forward svc/users 3001:3001 &
+          sleep 2
 
       - name: Test API
         run: |
