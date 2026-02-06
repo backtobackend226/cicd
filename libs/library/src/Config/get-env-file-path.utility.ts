@@ -10,7 +10,7 @@ export const getEnvFilePath = (service: string) => {
       'src',
       'env',
       `.env.${process.env.NODE_ENV}.local`,
-      `.env.${process.env.NODE_ENV}`,
+      // `.env.${process.env.NODE_ENV}`,
     ),
     join(cwd(), 'apps', service, 'src', 'env', `.env.${process.env.NODE_ENV}`),
   ];
