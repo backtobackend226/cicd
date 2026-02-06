@@ -19,8 +19,8 @@ spec:
           envFrom:
             - secretRef:
                 name: users-secrets
-            # - configMapRef:
-            #     name: users-config
+            - configMapRef:
+                name: users-config
           ports:
             - containerPort: 3001
           securityContext:

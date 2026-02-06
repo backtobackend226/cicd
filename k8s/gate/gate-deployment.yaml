@@ -19,8 +19,8 @@ spec:
           envFrom:
             - secretRef:
                 name: gate-secrets
-            # - configMapRef:
-            #     name: gate-config
+            - configMapRef:
+                name: gate-config
           ports:
             - containerPort: 3000
           securityContext:
