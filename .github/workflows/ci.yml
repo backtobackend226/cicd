@@ -110,18 +110,28 @@ jobs:
 
       - name: Test API
         run: |
-          curl -X POST http://localhost:3000/api/v1/users \
-           -H "Content-Type: application/json" \
-           -d '{
-            "name":"vasylko",
-            "password":"1234"
-               }'
-               
-          GATE_POD=$(kubectl get pod -l app=gate -o jsonpath='{.items[0].metadata.name}')
-          kubectl logs $GATE_POD --all-containers=true --timestamps
+          set +e  # do NOT stop if curl fails
 
+          echo "▶ Sending request to Gate API"
+          curl -v -X POST http://localhost:3000/api/v1/users \
+          -H "Content-Type: application/json" \
+          -d '{
+              "name": "vasylko",
+              "password": "1234"
+              }'
+          CURL_EXITCODE=$?
+
+          echo ""
+          echo "▶ Collecting Gate logs"
+          GATE_POD=$(kubectl get pod -l app=gate -o jsonpath='{.items[0].metadata.name}')
+          kubectl logs "$GATE_POD" --all-containers=true --timestamps || true
+
+          echo ""
+          echo "▶ Collecting Users logs"
           USERS_POD=$(kubectl get pod -l app=users -o jsonpath='{.items[0].metadata.name}')
-          kubectl logs $USERS_POD --all-containers=true --timestamps
+          kubectl logs "$USERS_POD" --all-containers=true --timestamps || true
+
+          exit $CURL_EXIT_CODE
 
       - name: Logs on failure
         if: failure()
