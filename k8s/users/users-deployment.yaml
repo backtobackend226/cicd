@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+        - name: users
+          image: users-service:ci
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: users-secrets
+            - configMapRef:
+                name: users-config
+          ports:
+            - containerPort: 3001
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000

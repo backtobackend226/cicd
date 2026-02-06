@@ -1,4 +1,4 @@
-import { CreateUserDto } from '@lib/library/src';
+import { CreateUserDto } from '@lib/library';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../domain/user.entity';
@@ -11,6 +11,8 @@ export class UsersRepository {
   ) {}
   async create(dto: CreateUserDto, manager?: EntityManager) {
     const user = new User(dto);
+    console.log('user repos =', user);
+
     if (manager) {
       return await manager.save(user);
     }
