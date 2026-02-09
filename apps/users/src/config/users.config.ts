@@ -13,6 +13,7 @@ export class UsersConfig {
   databaseUrl: string;
 
   constructor(private readonly configService: ConfigService) {
+    console.log('DB URL:', process.env.PG_URL);
     this.nodeEnv = this.configService.getOrThrow('NODE_ENV');
     this.port = +this.configService.getOrThrow('USERS_PORT');
     this.databaseUrl = this.configService.getOrThrow('PG_URL');
