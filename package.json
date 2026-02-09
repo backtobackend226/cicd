@@ -12,7 +12,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:gate:dev": "NODE_ENV=dev nest start gate --watch",
-    "start:users:dev": "NODE_ENV=dev  nest start users --watch",
+    "start:users:dev": "NODE_ENV=dev nest start users --watch",
     "start:debug": "nest start --debug --watch",
     "start:gate:prod": "NODE_ENV=prod node dist/apps/gate/main",
     "start:users:prod": "NODE_ENV=prod node dist/apps/users/main",
@@ -23,11 +23,6 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:gate:e2e": "NODE_ENV=test jest --config apps/gate/jest.config.ts",
     "test:users:e2e": "NODE_ENV=test jest --config apps/users/jest.config.ts",
-    "docker:up:dev": "docker compose -p monorepo_dev -f ./docker-compose.dev.yaml up -d --wait",
-    "docker:down:dev": "docker compose -p monorepo_dev -f ./docker-compose.dev.yaml down",
-    "docker:up:test": "docker compose -p monorepo_test -f ./docker-compose.test-local.yml up -d --wait",
-    "docker:down:test": "docker compose -p monorepo_test -f ./docker-compose.test-local.yml down -v --remove-orphans",
-    "docker:test:users:e2e": "yarn docker:up:test && yarn test:users:e2e",
     "prepare": "husky install"
   },
   "dependencies": {

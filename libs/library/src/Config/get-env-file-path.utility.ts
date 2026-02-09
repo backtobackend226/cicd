@@ -2,20 +2,6 @@ import { join } from 'path';
 import { cwd } from 'process';
 
 export const getEnvFilePath = (service: string) => {
-  console.log('getEnvFilePath service', service);
-
-  console.log(
-    'getEnvFilePath path',
-    join(
-      cwd(),
-      'apps',
-      service,
-      'src',
-      'env',
-      `.env.${process.env.NODE_ENV}.local`,
-    ),
-  );
-
   return [
     join(
       cwd(),
@@ -24,6 +10,7 @@ export const getEnvFilePath = (service: string) => {
       'src',
       'env',
       `.env.${process.env.NODE_ENV}.local`,
+      // `.env.${process.env.NODE_ENV}`,
     ),
     join(cwd(), 'apps', service, 'src', 'env', `.env.${process.env.NODE_ENV}`),
   ];
