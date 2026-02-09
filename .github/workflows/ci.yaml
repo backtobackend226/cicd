@@ -2,9 +2,9 @@ name: Gate Service – Docker Compose + KIND
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened]
     branches:
-      - main
+      - dev
 
 jobs:
   deploy:
