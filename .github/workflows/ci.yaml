@@ -17,6 +17,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check
+        uses: ./.github/workflows/ci.yaml
+        # with:
+        #   environment: prod
+        #   secrets: inherit
+
       # 2) Setup Docker
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
