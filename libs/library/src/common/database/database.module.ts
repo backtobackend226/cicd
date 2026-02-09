@@ -8,9 +8,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: configService.get<string>('PG_URL'),
+        url: configService.get('PG_URL'),
         autoLoadEntities: true,
-        synchronize: process.env.NODE_ENV !== 'prod' ? true : false,
+        synchronize: true,
+        // dropSchema: process.env.NODE_ENV === 'test' ? true : false,
       }),
     }),
   ],

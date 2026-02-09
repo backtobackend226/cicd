@@ -6,18 +6,19 @@ import { DataBaseModule, Environments, getEnvFilePath } from '@lib/library';
 import { UsersRepository } from './infrastructure/repository/users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './domain/user.entity';
+import { UsersConfig } from './config/users.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      ignoreEnvFile: process.env.NODE_ENV === Environments.Prod,
+      // ignoreEnvFile: process.env.NODE_ENV === Environments.Prod,
       envFilePath: getEnvFilePath('users'),
     }),
     DataBaseModule,
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository],
+  providers: [UsersService, UsersRepository, UsersConfig],
 })
 export class UsersModule {}
