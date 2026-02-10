@@ -1,4 +1,4 @@
-import { CreateUserDto, UpdateUserDto } from '@lib/library';
+import { CreateUserDto } from '@lib/library';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { UsersConfig } from '../../config/gate.config';
