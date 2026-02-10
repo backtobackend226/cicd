@@ -15,7 +15,7 @@ jobs:
     services:
       # Name of the service is 'postgres', which becomes the hostname
       postgres:
-        image: postgres:14 # Use a specific version of the PostgreSQL image
+        image: postgres:17 # Use a specific version of the PostgreSQL image
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
