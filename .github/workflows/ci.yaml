@@ -1,10 +1,9 @@
 name: Gate Service – Docker Compose + KIND
-
+#
 on:
   pull_request:
-    types: [closed]
     branches:
-      - main
+      - dev
 
 jobs:
   deploy:
@@ -16,6 +15,12 @@ jobs:
       # 1) Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Check
+        uses: ./.github/workflows/tests-lint.yaml
+        # with:
+        #   environment: prod
+        #   secrets: inherit
 
       # 2) Setup Docker
       - name: Setup Docker Buildx

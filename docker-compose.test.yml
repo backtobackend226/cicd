@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  postgres-users:
+    image: postgres:17
+    container_name: postgresql-monorepo-e2e:test
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: users-test:prod
+    ports:
+      - '5443:5432'
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d users-test:prod']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  postgres_data_test:
