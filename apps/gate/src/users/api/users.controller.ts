@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { CreateUserDto, UpdateUserDto } from '@lib/library';
+import { CreateUserDto } from '@lib/library';
 
 @Controller('users')
 export class UsersController {
