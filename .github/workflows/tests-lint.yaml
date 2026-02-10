@@ -61,7 +61,7 @@ jobs:
           PGPASSWORD: postgres
 
       - name: Run Lint
-        run: yarn lint:check
+        run: yarn lint
 
       - name: Run users tests
         run: yarn test:users:e2e
