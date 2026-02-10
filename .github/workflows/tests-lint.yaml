@@ -2,17 +2,38 @@ name: Lint and Tests
 
 on:
   workflow_call:
-    # inputs:
-    #   environment:
-    #     type: string
-    #     required: true
+    inputs:
+      environment:
+        type: string
+        required: true
 
 jobs:
   lint-and-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: ${{inputs.environment}}
+
+    services:
+      # Name of the service is 'postgres', which becomes the hostname
+      postgres-users:
+        image: postgres:17 # Use a specific version of the PostgreSQL image
+        env:
+          POSTGRES_USER: ${{secrets.POSTGRES_USER_TEST}}
+          POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD_TEST}}
+          POSTGRES_DB: ${{secrets.POSTGRES_DB_TEST}}
+        ports:
+          - 5442:5432 # Map port 5442 on the container to port 5432 on the host
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v5
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -23,8 +44,29 @@ jobs:
       - name: Install dependency
         run: yarn install --immutable --inline-builds
 
+      - name: Wait for PostgreSQL
+        # This health check ensures the database is ready before running tests
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h localhost -p 5442 -U postgres-users; then
+              echo "PostgreSQL is up and running"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL... (Attempt $i/10)"
+            sleep 2
+          done
+          echo "PostgreSQL did not start in time"
+          exit 1
+        # Use a temporary tool install to get pg_isready
+        env:
+          PGPASSWORD: ${{secrets.POSTGRES_PASSWORD_TEST}}
+
       - name: Run Lint
-        run: yarn lint:check
+        run: yarn lint
 
       - name: Run users tests
         run: yarn test:users:e2e
+        env:
+          PG_URL: ${{secrets.PG_URL_USERS_TEST}}
+          USERS_PORT: ${{secrets.USERS_PORT}}
+          NODE_ENV: ${{vars.NODE_ENV}}
